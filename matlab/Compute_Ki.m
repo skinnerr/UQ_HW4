@@ -4,13 +4,13 @@ function [ K, Pk ] = Compute_Ki( pk, sigma, ell, a, d, x )
 %%%
 
 % KL expansion eigensystem of G(x, omega)
-[ l, phix ] = Analytical_Eigs( sigma, ell, a, d, x );
+[ l, phix ] = Analytical_Eigs( sigma, ell, a, d, linspace(-a, a, length(x)));
 
 % Order of Phi_i along the direction j, written as i_j
 index_pc = nD_polynomial_array(d, pk);
 
 % Total number of terms in PCE expansion (minus one)
-Pk = size(index_pc, 2);
+Pk = size(index_pc, 1) - 1;
 
 %%%
 % PCE expansion's K_i matrices for the thermal coefficient K = 2 + exp(G)
