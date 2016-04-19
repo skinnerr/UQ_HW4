@@ -160,32 +160,34 @@ are seen to approach a limiting function of $x$ as $p$ is increased.
 
 To calculate a ``true'' mean and variance, we use the tensor-product stochastic collocation approach with $n_q=40$ quadrature points in each dimension and a Gauss-Hermite quadrature rule. This procedure is relatively simple, in that we sample the value of $\Psi_j(\mb{y})$ at the value of $\mb{y}$ indicated by the abscissas, and then compute the first and second moments of $u$ in the manner of \eqref{eq:galerkin_discretization}. The mean and variance are related to these moments as above, and are plotted in Figure \ref{fig:1c_true}. This enables us to calculate and plot the relative error in the mean and variance as a function of $x$, and for $x=0.5$, as $p$ is increased from 0 to 7. These results are shown in Figures \ref{fig:1c_relerr_full} and \ref{fig:1c_relerr_pt5}.
 
-\begin{figure}[h]
+We would expect a much smoother mean and variance, which is reason enough to believe that the ``true'' mean and variance are not the exact solutions. However, they are sufficient for our purposes of approximating a ``true'' solutions. The cool thing about the PCE approach is that we've only solved a single linear system, rather than solving $40^2 = 1600$ different realizations of the PDE. Further reason to suspect the truth of this solution, or the accuracy of our method at capturing variance, is seen in Figure \ref{fig:1c_relerr_pt5}, which shows that as $p$ increases past 3, little improvement in the approximation of $\var(u(x=0.5))$ is attained.
+
+\begin{figure}[p]
 \centering
 \includegraphics[width=0.8\textwidth]{prob_1ab.eps}
-\caption{bloop/}
+\caption{Convergence of temperature field mean and variance as the order $p$ of the Galerkin projection is increased.}
 \label{fig:1ab}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \includegraphics[width=0.8\textwidth]{prob_1c_true.eps}
-\caption{bloop/}
+\caption{``True'' mean and variance of the temperature field, as computed from Gauss-Hermite tensor-product stochastic collocation.}
 \label{fig:1c_true}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \includegraphics[width=0.8\textwidth]{prob_1c_relerr_full.eps}
-\caption{bloop/}
+\caption{Relative error as a function of position computed from data in Figures \ref{fig:1ab} and \ref{fig:1c_true}.}
 \label{fig:1c_relerr_full}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \includegraphics[width=0.8\textwidth]{prob_1c_relerr_pt5.eps}
 \\[1em]
-\caption{bloop/}
+\caption{Relative error at $x=0.5$ computed from data in Figures \ref{fig:1ab} and \ref{fig:1c_true}.}
 \label{fig:1c_relerr_pt5}
 \end{figure}
 
