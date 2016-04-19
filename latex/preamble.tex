@@ -1,0 +1,199 @@
+%%
+%% PACKAGES
+%%
+
+\usepackage[margin=0.9in, top=0.8in, bottom=1.0in]{geometry}
+\usepackage[charter]{mathdesign} % Main font
+\usepackage[scaled]{beramono} % Lovely monospace font
+\usepackage[T1]{fontenc}
+%\usepackage{amsmath, amssymb}
+\usepackage{mathtools}
+\usepackage{mathdots}
+\usepackage{titlesec} % Custom section headings.
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{xfrac}
+\usepackage{calc}
+\usepackage{subcaption}
+
+\usepackage{url}
+
+\DeclareMathAlphabet{\mathc}{OMS}{cmsy}{m}{n}
+
+% Graphics.
+%\usepackage{graphicx}
+\usepackage[update,prepend]{epstopdf} % To use eps files.
+
+% Code listings.
+\usepackage{listings} % Code listings.
+\usepackage{matlab-prettifier} % MATLAB code listings
+
+% Tweaks for captions and enumerations.
+\usepackage[labelfont=bf]{caption} % Figure captions.
+\usepackage{enumitem} % Fine tuning enumerations.
+%\usepackage{floatrow} % Captions to the right of figures.
+
+% Plotting and drawing
+\usepackage{tikz} % This automatically loads graphicx!
+\usetikzlibrary{calc} % For relative positions to defined coords
+\usepackage{pgfplots} % Scientific plotting tools
+\pgfplotsset{compat=1.7}
+
+% Figure placement
+%\usepackage{wrapfig}
+%\captionsetup[wrapfigure]{margin=0.5cm}
+
+% Packages to makes tables pretty.
+\usepackage{array}
+\usepackage{booktabs}
+\setlength{\heavyrulewidth}{1.5pt}
+\setlength{\abovetopsep}{4pt}
+
+% Fancyhdr package stuff...
+\usepackage{fancyhdr}
+\setlength{\headheight}{0pt}
+\setlength{\footskip}{50pt}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%%
+%% SETTINGS
+%%
+
+% Path to look for graphics
+\graphicspath{{../images/}}
+%\epstopdfsetup{outdir=../images/}
+
+% Caption spacing
+\setlength{\abovecaptionskip}{0pt}
+
+% List spacing
+\setlist{noitemsep}
+
+% Math operator font
+\DeclareSymbolFont{sfoperators}{OT1}{cmss}{m}{n}
+\DeclareSymbolFontAlphabet{\mathsf}{sfoperators}
+\makeatletter
+\def\operator@font{\mathgroup\symsfoperators}
+\makeatother
+
+%% No indent all paragraphs
+%\setlength{\parindent}{0in}
+
+% Figure references
+\newcommand{\figref}[1]{Figure~\ref{#1}}
+
+% Special format section headings
+\titleformat{\section}%
+	{\large\bf\scshape}% Text formatting
+	{\arabic{section}}% Number
+	{1em}% Space between number and text
+	{}% Code before
+	[]% Code after
+\titleformat{\subsection}%
+	{\normalsize\bf\scshape}% Text formatting
+	{\arabic{section}.\arabic{subsection}}% Number
+	{1em}% Space between number and text
+	{}% Code before
+	[]% Code after
+%\titleformat{\subsubsection}%
+%	{\color{blue}}% Text formatting
+%	{\arabic{subsubsection} $\rightarrow$}% Number
+%	{1em}% Space between number and text
+%	{}% Code before
+%	[]% Code after
+
+\definecolor{mygray}{rgb}{0.4, 0.4, 0.4}
+\lstset{
+style=Matlab-editor,
+mlscaleinline=false,
+basicstyle=\ttfamily\lst@ifdisplaystyle\scriptsize\fi,
+frame=single,
+rulecolor=\color{mygray},
+numbers=left,
+numbersep=10pt,
+numberstyle=\footnotesize \ttfamily \color{mygray},
+xleftmargin=30pt,
+xrightmargin=5pt,
+framexleftmargin=4pt,
+framextopmargin=2pt
+}
+
+% Allow white-space to be eaten within any lst environments between returns.
+\lstset{breaklines,breakatwhitespace}
+
+% Define the | chacacter as shorthand for inline listings.
+%\lstMakeShortInline{`}
+
+%%
+%% COMMANDS
+%%
+
+% Various plot lines to include in-line.
+\newcommand{\solidrule}[1][8mm]{\rule[0.5ex]{#1}{1.5pt}}
+\newcommand{\dashrule}{\mbox{%
+	\solidrule[2mm]\hspace{1mm}\solidrule[2mm]\hspace{1mm}\solidrule[2mm]}}
+\newcommand{\dotdashrule}{\mbox{%
+	\solidrule[0.5mm]\hspace{1mm}\solidrule[2mm]\hspace{1mm}\solidrule[0.5mm]\hspace{1mm}\solidrule[2mm]}}
+
+% Automated file inclusion for code listings
+\makeatletter
+\def\includecode{\@ifnextchar[{\@with}{\@without}}
+\def\@with[#1]#2{
+}
+\def\@without#1{
+  \lstinputlisting[caption=\ttfamily\protect\detokenize{#1}, escapechar=, frame=single]{../matlab_code/#1}
+}
+\makeatother
+
+% Degree symbol.
+\newcommand{\degree}{\ensuremath{^\circ}}
+
+% Superscript text: 1st, 2nd, 3rd, 4th
+\newcommand{\suptext}[1]{\ensuremath{^\text{#1}}\xspace}
+\newcommand{\st}{\suptext{st}}
+\newcommand{\nd}{\suptext{nd}}
+\newcommand{\rd}{\suptext{rd}}
+\let\oldth\th % Reassign the current \th command
+\renewcommand{\th}{\suptext{th}}
+
+% Underline matrices
+\newcommand{\ul}[1]{\smash{\underline{#1}}}
+\newcommand{\uul}[1]{\smash{\underline{\underline{#1}}}}
+
+% Partial derivatives
+\newcommand{\pp}[2]{\ensuremath{\frac{\partial#1}{\partial#2}}}
+
+% Math operators
+\DeclareMathOperator\erf{erf}
+\DeclareMathOperator\var{Var}
+
+% Big O notation
+\newcommand{\bigo}{\ensuremath{\mathcal{O}}}
+
+% Text max and min
+\newcommand{\tmax}{\ensuremath{\text{max}}}
+\newcommand{\tmin}{\ensuremath{\text{min}}}
+
+% Norm
+\newcommand{\norm}[1]{\ensuremath{\left| #1 \right|}}
+
+% Expectation
+\newcommand{\xpect}[1]{\ensuremath{\left\langle #1 \right\rangle}}
+
+% Bold vectors
+% Option 1: Works on more than single tokens, but makes regular letters italic as well as bold.
+%\renewcommand{\vec}[1]{\mathbold{#1}}
+% Option 2: Only works if a single token is passed to the command, but makes regular letters bold only.
+\newcommand{\mb}[1]{
+	\ifcat\noexpand#1\relax
+		\expandafter\mathbold
+	\else
+		\expandafter\mathbf
+	\fi{{#1}}
+}
+
+% Underlines for tensor notation.
+\newcommand{\tsr}[1]{\ensuremath{\underline{#1}}}
+\newcommand{\tsrr}[1]{\ensuremath{\underline{\underline{#1}}}}

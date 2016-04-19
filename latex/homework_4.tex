@@ -1,0 +1,196 @@
+\documentclass[11pt]{article}
+
+\input{./preamble.tex}
+
+%%
+%% DOCUMENT START
+%%
+
+\begin{document}
+
+
+\newcommand{\widesim}[2][1.5]{
+  \mathrel{\overset{#2}{\scalebox{#1}[1]{$\sim$}}}
+}
+
+\pagestyle{fancyplain}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{\hrule UQ: Homework 4}
+\cfoot{\hrule \thepage}
+\rfoot{\hrule Ryan Skinner}
+
+\noindent
+{\Large Homework 4}
+\hfill
+{\large Ryan Skinner}
+\\[0.5ex]
+{\large ASEN 6519: Uncertainty Quantification}
+\hfill
+{\large Due 2016/04/19}\\
+\hrule
+\vspace{6pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Problem 1} %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The thermal coefficient $K$ of a 1-D slab is defined on $\mathc{D} = (0,1)$ and is characterized by a shifted log-normal random process
+\begin{equation}
+K(x,\omega) = 2 + \exp(G(x,\omega)), \quad x \in \mathc{D}
+\end{equation}
+where $G(x,\omega)$ is a Gaussian random process also defined on $\mathc{D}$. The mean and covariance functions of $G(x,\omega)$ are
+\begin{equation}
+\xpect{G(x,\cdot)} = 1.0, \quad x \in \mathc{D}
+\end{equation}
+and
+\begin{equation}
+C_{GG}(x_1,x_2) = \sigma^2 \exp \left( \frac{- | x_1-x_2 | }{\ell} \right), \quad (x1,x2) \in \mathc{D} \times \mathc{D}
+\end{equation}
+respectively. We would like to compute the statistics of the temperature field $u(x)$ by solving the governing steady-state stochastic heat equation
+\begin{equation}
+\begin{aligned}
+-\pp{}{x} \left( K(x,\omega) \pp{u(x,\omega)}{x} \right) &= 1.0, \qquad x \in \mathc{D}, \\
+u(0,\omega) &= 0, \\
+u(1,\omega) &= 0,
+\end{aligned}
+\label{eq:pde}
+\end{equation}
+using the stochastic Galerkin approach.
+
+For this problem, we let $\sigma = 2$ and $\ell = 2.0$, and use the codes from Homework \#1 to generate a $d=2$ Karhunen-L\"oeve expansion of $G(x,\omega)$ via the analytical solution. The approximate log-normal is then computed through its polynomial chaos expansion (PCE)
+\begin{equation}
+K_{p_k}(x,\mb{y}) = \sum_{i=0}^{P_K} K_i(x) \Psi_i(\mb{y})
+\end{equation}
+where $K_0$ and $K_i$ ($i>0$) are defined as
+\begin{equation}
+K_0 = 2 + \exp \left( 1 + \frac{1}{2} \sum_{j=1}^d \lambda_j \phi_j^2(x) \right)
+\end{equation}
+and
+\begin{equation}
+K_i(x) = \frac{K_0(x) - 2}{\sqrt{\sum_{j=1}^d (i_j!)}} \sum_{j=1}^d \left( \sqrt{\lambda_j} \phi_j(x) \right)^{i_j}
+\end{equation}
+where $\{ \lambda_i, \phi_i(x) \}_{i=1}^d$ are eigen-pairs of the covariance kernel $C_{GG}$, and $i_j$ denotes the polynomial order of $\Psi_i(\mb{y})$ along the direction $j \in \{1, \dots, d\} = \{1,2\}$. We set $p_k = 14$ as the total order of the PC expansion, and write a finite difference code to solve the stochastic PDE in \eqref{eq:pde}. This employs the stochastic Galerkin discretization of total order $p$
+\begin{equation}
+u_p(x,\mb{y}) = \sum_{j=0}^{P} u_j(x) \Psi_j(\mb{y})
+\label{eq:galerkin_discretization}
+\end{equation}
+
+\subsection*{Solution}
+
+In the stochastic Galerkin discretization, we first discretize our differential operator in space, extracting the stochastic component from \eqref{eq:pde} through the PCE and arriving at
+\begin{align}
+\sum_{k=0}^{P_K}
+\;\;
+\frac{-\partial}{\partial x} \left(K_k(x) \pp{\cdot}{x} \right)
+\;
+u(x,\mb{y})
+\;
+\Psi_k(\mb{y})
+&=
+f
+\\
+\sum_{k=0}^{P_K}
+\;\;
+\uul{K}_k
+\Psi_k(\mb{y})
+\;
+\ul{u}(x,\mb{y})
+&=
+\ul{f}
+\end{align}
+Combining the sum over $k$ into one composite matrix yields the pseudo-spectral system
+\begin{equation}
+\uul{K}(\mb{y}) \; \ul{u}(x,\mb{y}) = \ul{f}
+\end{equation}
+
+We then use another PC expansion on the solution $\ul{u}(x,\mb{y})$, approximating it as
+\begin{equation}
+\ul{\hat{u}}(\mb{y}) = \sum_{j=0}^P \ul{u}_j \Phi_j(\mb{y})
+\end{equation}
+Then, noting that the optimal solution's residual must be orthogonal to the PCE basis functions, we arrive at the system of equations
+\begin{align}
+\xpect{\uul{K}(\mb{y}) \; \ul{\hat{u}}(\mb{y}) - \ul{f}, \Psi_i(\mb{y})} &= 0
+\\
+\sum_{j=0}^P
+\xpect{\uul{K}(\mb{y}) \; \Psi_i(\mb{y}) \; \Psi_j(\mb{y}) } \ul{u}_j(\mb{y}) &= \xpect{\ul{f}, \Psi_i(\mb{y})}
+\end{align}
+which can be written in matrix form as
+\begin{equation}
+\begin{bmatrix}
+\uul{K}_{0,0} & \cdots & \uul{K}_{0,P} \\
+\vdots & \ddots & \vdots \\
+\uul{K}_{P,0} & \cdots & \uul{K}_{P,P}
+\end{bmatrix}
+\begin{bmatrix}
+\ul{u}_0 \\ \vdots \\ \ul{u}_P
+\end{bmatrix}
+=
+\begin{bmatrix}
+\ul{f}_0 \\ \vdots \\ \ul{f}_P
+\end{bmatrix}
+\end{equation}
+where
+\begin{align}
+\uul{K}_{i,j} &\equiv \sum_{k=0}^{P_K} \; \uul{K}_k \overbrace{\xpect{\Psi_i \Psi_j \Psi_k}}^{c_{ijk}}
+\\
+\ul{f}_i &=
+\begin{cases}
+\ul{f} & i=0 \\
+\ul{0} & \text{else}
+\end{cases}
+\end{align}
+
+What makes the polynomial chaos approach so attractive is that, though it is intrusive and requires knowledge of the PDE being solved, components of an existing numerical solver can be leveraged. In this example, the $\uul{K}_k$ matrices and the $\ul{f}$ vector are the LHS and RHS of the matrix system constructed by a standard central difference heat equation code.
+
+Additionally, because $c_{ijk} = 0$ when $k > 2P$, it is the case that if $p_k \ge 2p$, the Galerkin projection of the PDE with the thermal coefficient expansion truncated at $P_K$ terms ($K_{p_k}$) is equivalent to the same expansion including infinite terms ($K_{p_k=\infty}$). Thus, no benefit is gained from increasing $p_k$ beyond $2p$. Because we take $p \in \{0, 1, \dots, 7\}$ in this homework with $p_k=14$, no computational effort is wasted.
+
+The convergence of our solution is shown in Figure \ref{fig:1ab}, wherein for a fixed total order $p_k$ of the thermal coefficient $K_{p_k}$ PC expansion, the the total order $p$ of the Galerkin projection solution goes from 0 to 7. Both mean and variance, which are computed from the PCE as
+\begin{equation}
+\begin{aligned}
+\xpect{u(x)}   &\approx u_0(x) \\
+\var(x) &= \xpect{u(x)^2} - \xpect{u(x)}^2, \quad
+\xpect{u(x)^2} \approx \sum_{i=0}^P u_i(x)^2
+\end{aligned}
+\end{equation}
+are seen to approach a limiting function of $x$ as $p$ is increased.
+
+To calculate a ``true'' mean and variance, we use the tensor-product stochastic collocation approach with $n_q=40$ quadrature points in each dimension and a Gauss-Hermite quadrature rule. This procedure is relatively simple, in that we sample the value of $\Psi_j(\mb{y})$ at the value of $\mb{y}$ indicated by the abscissas, and then compute the first and second moments of $u$ in the manner of \eqref{eq:galerkin_discretization}. The mean and variance are related to these moments as above, and are plotted in Figure \ref{fig:1c_true}. This enables us to calculate and plot the relative error in the mean and variance as a function of $x$, and for $x=0.5$, as $p$ is increased from 0 to 7. These results are shown in Figures \ref{fig:1c_relerr_full} and \ref{fig:1c_relerr_pt5}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{prob_1ab.eps}
+\caption{bloop/}
+\label{fig:1ab}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{prob_1c_true.eps}
+\caption{bloop/}
+\label{fig:1c_true}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{prob_1c_relerr_full.eps}
+\caption{bloop/}
+\label{fig:1c_relerr_full}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{prob_1c_relerr_pt5.eps}
+\\[1em]
+\caption{bloop/}
+\label{fig:1c_relerr_pt5}
+\end{figure}
+
+
+%%
+%% DOCUMENT END
+%%
+\end{document}
