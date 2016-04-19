@@ -19,7 +19,7 @@ function [dag, sub, sup, rhs] = Assemble_u( h, u0, uf, K )
     sup = ( 1/h^2) * ( K(sup_range) + K(sup_range+1)/4 - K(sup_range-1)/4);
     rhs = ones(length(dag_range),1);
     
-    % Account for boundary conditions, even though thf = 0.
+    % Account for boundary conditions.
     rhs(1)   = rhs(1)   - (( 1/h^2) * ( K(2)   - K(2+1)  /4 + K(2-1)  /4)) * u0;
     rhs(end) = rhs(end) - (( 1/h^2) * ( K(N-1) + K(N-1+1)/4 - K(N-1-1)/4)) * uf;
     

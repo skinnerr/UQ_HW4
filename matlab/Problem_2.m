@@ -1,6 +1,9 @@
-function [] = Problem_1()
+function [] = Problem_2()
 
 Set_Default_Plot_Properties();
+
+% Figures
+hfig = figure();
 
 % Solution domain
 Nx = 101;
@@ -21,49 +24,22 @@ d = 2;          % Number of terms
 
 % Total order of PCE for K_i
 pk = 14;
-index_pc = nD_polynomial_array(d, pk);
 
 % Calculate the PCE expansion for K_i(x)
 [Ki, Pk] = Compute_Ki(pk, sigma, ell, a, d, x);
 
-%%%
-% Compute the "true" solution based on sparse sampling
-%%%
-
-[m_true, v_true, ~] = Sample_Sparse(dx, u0, uf, Ki, Pk, x, index_pc);
-
-figure()
-
-subplot(2,1,1)
-plot(x, [nan, m_true, nan])
-xlabel('x');
-ylabel('mean');
-
-subplot(2,1,2)
-plot(x, [nan, v_true, nan])
-xlabel('x');
-ylabel('variance');
-
-%%%
-% Compute the full PCE solution
-%%%
-
-% Figures
-hfig1 = figure();
-hfig2 = figure();
-
-% Loop over total solution order
+% Polynomial chaos expansion (PCE) options for solution uhat
 p_list = 0:7;
-re_m_pt5 = nan(length(p_list),1);
-re_v_pt5 = nan(length(p_list),1);
-for p_ind = 1:length(p_list)
-    
-    p = p_list(p_ind);
+
+% Loop over total solution order (Homework's part 'b')
+for p = p_list
     
     fprintf('Working on solution of degree p = %i\n', p);
     
     % Total number of terms in solution's PC expansion (minus one)
     P = factorial(p+d) / ( factorial(p) * factorial(d) ) - 1;
+    
+    index_pc = nD_polynomial_array(d, pk);
 
     %%%
     % Construct the global matrix equation
@@ -122,30 +98,21 @@ for p_ind = 1:length(p_list)
     % Compute statistics
     %%%
     
-    m = u(1,:);         % Mean
+    m = u(1,:);
     if p > 0
-        v = sum(u.^2);  % Second moment
+        v = sum(u.^2);
     else
         v = u.^2;
     end
-    v = v - m.^2; % Use the fact that Var(X) = E[X^2] - (E[X])^2
-    
-    m_err = abs(m - m_true) ./ m_true;
-    v_err = abs(v - v_true) ./ v_true;
-    
-    re_m_pt5(p_ind) = m_err(floor(Nx/2));
-    re_v_pt5(p_ind) = v_err(floor(Nx/2));
     
     m = [nan, m, nan];
     v = [nan, v, nan];
-    m_err = [nan, m_err, nan];
-    v_err = [nan, v_err, nan];
     
     %%%
     % Plot solution
     %%%
     
-    figure(hfig1);
+    figure(hfig);
     
     subplot(2,1,1);
     hold on;
@@ -159,48 +126,17 @@ for p_ind = 1:length(p_list)
     xlabel('x');
     ylabel('variance');
     
-    figure(hfig2);
-    
-    subplot(2,1,1);
-    hold on;
-    plot(x, m_err', 'DisplayName', sprintf('p = %i', p));
-    xlabel('x');
-    ylabel('rel. err. in mean');
-    
-    subplot(2,1,2);
-    hold on;
-    plot(x, v_err', 'DisplayName', sprintf('p = %i', p));
-    xlabel('x');
-    ylabel('rel. err. in variance');
-    
 end
 
-figure(hfig1);
+figure(hfig);
+
 subplot(2,1,1);
 hleg = legend('show');
 set(hleg, 'Location', 'eastoutside');
+
 subplot(2,1,2);
 hleg = legend('show');
 set(hleg, 'Location', 'eastoutside');
-
-figure(hfig2);
-subplot(2,1,1);
-set(gca, 'YScale', 'log');
-hleg = legend('show');
-set(hleg, 'Location', 'eastoutside');
-subplot(2,1,2);
-set(gca, 'YScale', 'log');
-hleg = legend('show');
-set(hleg, 'Location', 'eastoutside');
-
-figure();
-hold on;
-plot(p_list, re_m_pt5, 'DisplayName', 'mean');
-plot(p_list, re_v_pt5, 'DisplayName', 'variance');
-xlabel('p');
-ylabel('rel. err.');
-set(gca, 'XScale', 'log');
-set(gca, 'YScale', 'log');
 
 end
 
